@@ -1,12 +1,16 @@
 
+class Player{
+	var name:String = "Bob"
+	var animal:Animal = Hog()
+	var location:Place = base
+}
+
 // ANIMAL CLASSES
 class Animal {
-    var name:String
 	var strength:Int
 	var speed:Int
 	var agility:Int
-	init(_ name:String){
-		self.name = name
+	init(){
 		self.strength = 0
 		self.speed = 0
 		self.agility = 0
@@ -17,8 +21,8 @@ class Animal {
 }
 
 class Hog: Animal{
-	override init(_ name:String){
-		super.init(name)
+	override init(){
+		super.init()
 		self.strength = 3
 		self.speed = 2
 		self.agility = 1
@@ -28,8 +32,8 @@ class Hog: Animal{
 	}
 }
 class Dog: Animal{
-	override init(_ name:String){
-		super.init(name)
+	override init(){
+		super.init()
 		self.strength = 2
 		self.speed = 3
 		self.agility = 1
@@ -39,8 +43,8 @@ class Dog: Animal{
 	}
 }
 class Frog: Animal{
-	override init(_ name:String){
-		super.init(name)
+	override init(){
+		super.init()
 		self.strength = 1
 		self.speed = 2
 		self.agility = 3
@@ -50,122 +54,152 @@ class Frog: Animal{
 	}
 }
 
-var oinky = Hog("Oinky")
-print("\(oinky.name) is \(oinky.strength) strong!")
-oinky.speak()
 
+//PLACE CLASS
+class Place{
+	var name:String
+	var initDesc:String
+	var goalDesc:String
+	var reDesc:String
+	var finDesc:String
 
-print("Hello! Are you ready for an adventure?")
-var ready:String
-repeat{
-	ready = readLine()!
-	if ready == "y"{
-		print("Great! Let us get started...")
+	var entered:Bool = false
+	var completed:Bool = false
+
+	var options:[[String]]
+
+	init(name n:String, initDesc id:String, goalDesc gd:String, reDesc rd:String, 
+	finDesc fd:String, options opts:[[String]]){
+		self.name = n //name of the place
+		self.initDesc = id //description on initial entry
+		self.goalDesc = gd //what is the goal here?
+		self.reDesc = rd //description if you return to the forest without completing the goal
+		self.finDesc = fd //description if you return to the forest after finishing the goal
+		self.options = opts //options for user input
 	}
-	else if ready == "n"{
-		print("Boo! Fine I will wait until you say yes.")
+
+	func initEntry(){print(initDesc)}
+
+	func reEntry(){print(reDesc)}
+
+	func finEntry(){print(finDesc)}
+
+	
+
+	func tryGoal(_ plyr:Player){
+		print(goalDesc)
+		chooseOption(player:plyr, place: self.name, options: self.options)
+
+	}
+
+	func play(_ plyr:Player){
+		if !entered{
+			initEntry()
+			tryGoal(plyr)
+		}
+		else if entered && !completed {
+			reEntry()
+			tryGoal(plyr)
+		}
+		else if entered && completed {
+			finEntry()
+		}
+	}
+}
+
+func chooseOption(place p:String, options opts:[[String]]){
+	print("What do you do?")
+		for option in opts{
+			print("\(option[0]): \(option[1])")
+		}
+		
+		var validChoice = false
+		repeat{
+			let choice = readLine()
+			validChoice = possibilities(place: p, choice: choice!)
+		}while !validChoice
+}
+
+
+//POSSIBLE ACTIONS FOR DIFFERENT PLACES
+
+func possibilities(place p:String, choice c:String) -> Bool{
+	if p == "Forest"{
+		switch c{
+			case "p":
+				print("You pull.")
+				return true
+			case "h":
+				print("You ask aloud what to do.")
+				return true
+			case "g":
+				print("You give up and leave. How lame.")
+				return true
+			default:
+				print("You do something nonsensical. Try again.")
+				return false
+		}
 	}
 	else{
-		print("That response makes no sense to me. Try again.")
-		
+		return false
 	}
-} while ready != "y"
+
+}
+
+//OBJECTS FOR EACH PLACE
+let base = Place(
+	name:"Base",
+	initDesc:"You enter the base.",
+	goalDesc:"You pick somewhere to go from here.",
+	reDesc:"You reenter the base.",
+	finDesc:"You completed your quest!",
+	options:[
+		["s", "Switch animals."],
+		["f", "Go to the forest."],
+		["m", "Go to the mountain."],
+		["d", "Go to the desert."],
+		["c", "Go to the castle."]
+	]
+)
+let forest = Place(
+	name:"Forest",
+	initDesc:"You enter a lush, verdant forest. Birds are singing. Rays of sunshine sneak past the leaves. A light breeze refreshes you.",
+	goalDesc:"There is a whimpering noise coming from a fallen tree. You see Old Dog is trapped inside a log! \"Woof woof,\" he barks. \"Could you help me get out of here?\"",
+	reDesc:"You reenter the forest. The birds have flown away. They got sick of Old Dog's whimpering. The light breeze and sunshine is not as refreshing. Old Dog could sure use your help.",
+	finDesc:"You return to the lush, verdant forest. The birds are singing a paean to your success in liberating Old Dog. You bask in the sunshine and light breeze feeling accomplished.",
+	options:[
+		["p", "Pull Old Dog out of the log."], 
+		["h", "Ask for help."], 
+		["g", "Give up and go back."]
+	]
+)
 
 
-// print("How old are you?")
 
-// var age = 66
-// var response:String
+func main(){
+	var running = true
+	var player = Player()
 
-// if age < 18 {
-// 	response = "Kid"
-// }
-// else if age < 18 && age < 65{
-// 	response = "Adult"
-// }
-// else{
-// 	response = "Geezer"
-// }
-// print("Hello! You are \(age), \(response).")
+	repeat{
+		print("Choose where to go:")
+		switch c{
+			case "s":
+				print("You switch animals")
+				print(plyr.animal)
+				plyr.animal = Frog()
+				print(plyr.animal)
+				return true
+			case "f":
+				print("You go to the forest.")
+				return true
+			case "m":
+				print("You go to the mountain.")
+				return true
+			default:
+				print("You do something nonsensical. Try again.")
+				return false
+		}
+	}while running
+}
 
-// var someCharacter = "c"
-
-// switch someCharacter{
-// 	case "a":
-// 		print("A is for Alligator")
-// 	case "b", "c":
-// 		print("B is for Butt")
-// 	default:
-// 		print("Nothing is real!")
-// }
-
-// for _ in 1...5{
-// 	print("poop!")
-// }
-
-// var counter = 2
-// repeat{
-// 	print("Smorgy Borgyson!")
-// 	counter = counter - 1
-// } while counter > 0
-
-// func add(_ p1:Int, _ p2:Int) -> Int {
-
-// 	let z = p1 + p2
-// 	return z
-// }
-
-// print(add(7, 5))
-
-// class Dog {
-// 	var name:String
-// 	var age:Int
-// 	var breed:String?
-// 	var mood:String?
-// 	var nameAndMood:String{
-// 		if mood != nil {
-// 			return name + " the \(mood!) dog"
-// 		}
-// 		else{
-// 			return name
-// 		}
-// 	}
-// 	init(){
-// 		self.name = "Dog"
-// 		self.age = 1
-// 		self.breed = "Mut"
-// 		self.mood = "Neutral"
-// 	}
-
-// 	convenience init(_ n:String, _ a:Int, _ b:String, _ m:String){
-// 	self.init()
-// 		self.name = n
-// 		self.age = a
-// 		self.breed = b
-// 		self.mood = m
-// 	}
-	 
-// 	func bark() {
-// 		print("\(name) barked!")
-// 		if breed != nil{
-// 			print("\(nameAndMood) is a \(breed!)")
-// 		}
-// 	}
-// }
-
-// class BigDog : Dog {
-// 	override func bark() {
-// 		super.bark()
-// 		print("The ground trembled in his wake!")
-// 	}
-// }
-// var bef = Dog("Bef", 9, "Mut", "Hungry")
-// bef.bark()
-// var wish = BigDog("Wish", 3, "Chocolate Labrador", "Intrepid")
-// wish.bark()
-// var dog = Dog()
-// dog.bark()
-
-// var bones = [String:Int]()
-// bones["White Bone"] = 10
-// print(bones["White Bone"]!)
+main()
